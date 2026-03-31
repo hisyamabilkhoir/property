@@ -9,14 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // PRELOADER
     // ========================================
     const preloader = document.getElementById('preloader');
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            preloader.classList.add('hidden');
+    if (preloader) {
+        window.addEventListener('load', () => {
             setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 600);
-        }, 1200);
-    });
+                preloader.classList.add('hidden');
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 600);
+            }, 1200);
+        });
+    }
 
     // Fallback - hide preloader after 4s max
     setTimeout(() => {
@@ -268,11 +270,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', handleNavScroll);
 
     // Mobile Menu Toggle
-    navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('active');
-        navMenu.classList.toggle('open');
-        document.body.style.overflow = navMenu.classList.contains('open') ? 'hidden' : '';
-    });
+    if (navToggle) {
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('open');
+            document.body.style.overflow = navMenu.classList.contains('open') ? 'hidden' : '';
+        });
+    }
 
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -744,6 +748,92 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
+        });
+    });
+
+    // ========================================
+    // MODAL SYSTEM — Gallery & Listings
+    // ========================================
+    const modal = document.getElementById('infoModal');
+    const modalClose = document.getElementById('modalClose');
+    const modalOverlay = document.getElementById('modalOverlay');
+
+    window.openModal = function (data) {
+        if (!modal) return;
+
+        // Fill data
+        document.getElementById('modalImage').src = data.image;
+        document.getElementById('modalTitle').textContent = data.title;
+        document.getElementById('modalTag').textContent = data.tag || 'Luxury Property';
+        document.getElementById('modalPrice').textContent = data.price || '';
+        document.getElementById('modalDesc').textContent = data.desc || 'Experience unparalleled luxury in this meticulously designed estate. Every detail has been curated to provide an extraordinary living experience.';
+
+        const metaContainer = document.getElementById('modalMeta');
+        metaContainer.innerHTML = '';
+        if (data.meta && data.meta.length > 0) {
+            data.meta.forEach(stat => {
+                const span = document.createElement('span');
+                span.textContent = stat;
+                metaContainer.appendChild(span);
+            });
+        }
+
+        // Show modal
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }, 10);
+    };
+
+    window.closeModal = function () {
+        if (!modal) return;
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 500);
+    };
+
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    if (modalOverlay) modalOverlay.addEventListener('click', closeModal);
+
+    // Close on ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    // LISTING CARD CLICKS
+    document.querySelectorAll('.property-view-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const card = btn.closest('.property-card');
+            const data = {
+                image: card.querySelector('img').src,
+                title: card.querySelector('.property-name').textContent,
+                price: card.querySelector('.property-price').textContent,
+                tag: card.querySelector('.property-badge').textContent,
+                meta: Array.from(card.querySelectorAll('.property-meta span')).map(s => s.textContent),
+                desc: "This exceptional residence offers a blend of sophisticated design and modern comfort. Located in a prime neighborhood, it features high-end finishes, spacious living areas, and breathtaking views."
+            };
+            openModal(data);
+        });
+    });
+
+    // GALLERY CLICKS
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const data = {
+                image: item.querySelector('img').src,
+                title: item.querySelector('h3').textContent,
+                tag: item.querySelector('.gallery-cat').textContent,
+                price: 'Interior Design',
+                meta: ['Handcrafted', 'Luxury Finishes', 'Custom Detail'],
+                desc: "Explore the intricate details of our interior masterpieces. This space exemplifies our commitment to architectural excellence and boutique luxury living."
+            };
+            openModal(data);
         });
     });
 
