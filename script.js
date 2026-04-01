@@ -778,6 +778,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Custom Button Text
+        const modalBtn = modal.querySelector('.modal-actions .btn');
+        if (modalBtn) {
+            modalBtn.textContent = data.buttonText || 'Schedule Viewing';
+        }
+
         // Show modal
         modal.style.display = 'flex';
         setTimeout(() => {
@@ -831,7 +837,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 tag: item.querySelector('.gallery-cat').textContent,
                 price: 'Interior Design',
                 meta: ['Handcrafted', 'Luxury Finishes', 'Custom Detail'],
-                desc: "Explore the intricate details of our interior masterpieces. This space exemplifies our commitment to architectural excellence and boutique luxury living."
+                desc: "Explore the intricate details of our interior masterpieces. This space exemplifies our commitment to architectural excellence and boutique luxury living.",
+                buttonText: "Inquire Now"
+            };
+            openModal(data);
+        });
+    });
+
+    // AWARD CARD CLICKS
+    document.querySelectorAll('.award-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const awardName = card.querySelector('.award-name').textContent;
+            const awardYear = card.querySelector('.award-year').textContent;
+            const awardOrg = card.querySelector('.award-org').textContent;
+            const data = {
+                image: card.querySelector('img').src,
+                title: awardName,
+                tag: `Award ${awardYear}`,
+                price: awardOrg,
+                meta: ['Global Recognition', 'Professional Excellence', 'Industry Leader'],
+                desc: `This prestigious award recognizes ${awardName} for outstanding achievement and excellence. Presented by ${awardOrg} in ${awardYear}, it reflects our unwavering commitment to the highest standards in luxury real estate.`,
+                buttonText: "Connect with Hisyam"
             };
             openModal(data);
         });
